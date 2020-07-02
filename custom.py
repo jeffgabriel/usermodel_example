@@ -53,15 +53,21 @@ def score(data, model, **kwargs):
   for df in batches(data, 1000):
     prepped_data = []
     for _, row in df.iterrows():
-      sequences = tokenizer.texts_to_sequences(row['review'])
+      review_text = row['review']
+      if review_text is None or pd.isna(review_text):
+        continue
+      sequences = tokenizer.texts_to_sequences(review_text)
       padded = pad_sequences(sequences, maxlen=1024)
       prepped_data.append(padded[0])
 
     # This method makes predictions against the raw, deserialized model
-    start_predict  = time.time_ns()
-    predictions = model.predict([prepped_data], steps=1)
-    print_timing("prediction", start_predict, time.time_ns())
-    all_preds.append(predictions)
+    if len(prepped_data) > 0:
+      start_predict  = time.time_ns()
+      predictions = model.predict([prepped_data], steps=1)
+      print_timing("prediction", start_predict, time.time_ns())
+      all_preds.append(predictions) 
+    else:
+      return pd.DataFrame(columns=['positive','negative'])
 
   # Execute any steps you need to do after scoring
   # Note: To properly send predictions back to DataRobot, the returned DataFrame should contain a
