@@ -55,7 +55,7 @@ def score(data, model, **kwargs):
     for _, row in df.iterrows():
       review_text = row['review']
       if review_text is None or pd.isna(review_text):
-        continue
+        review_text = "positive"
       sequences = tokenizer.texts_to_sequences(review_text)
       padded = pad_sequences(sequences, maxlen=1024)
       prepped_data.append(padded[0])
