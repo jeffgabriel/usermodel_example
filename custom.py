@@ -53,7 +53,7 @@ def score(data, model, **kwargs):
   for df in batches(data, 1000):
     prepped_data = []
     for _, row in df.iterrows():
-      review_text = row['review']
+      review_text = row['text']
       if review_text is None or pd.isna(review_text):
         review_text = "positive"
       sequences = tokenizer.texts_to_sequences(review_text)
